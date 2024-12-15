@@ -81,3 +81,25 @@ WHERE at.Name = 'Injury Rehabilitation'
 GROUP BY c.Name
 ORDER BY ParticipationCount DESC
 LIMIT 10;
+
+SELECT 
+    a.ActivityCode, 
+    CASE
+        WHEN COUNT(p.ParticipationID) < a.Capacity THEN 'AVAILABLE'
+        ELSE 'FULL'
+    END AS Status
+FROM Activity a
+LEFT JOIN Participation p ON a.ActivityID = p.ActivityID
+GROUP BY a.ActivityID;
+
+SELECT 
+    t.FirstName, 
+    t.LastName, 
+    SUM(p.ParticipationID * a.PricePerSession) AS TotalEarnings
+FROM Trainer t
+JOIN ActivityTrainer at ON t.TrainerID = at.TrainerID
+JOIN Activity a ON at.ActivityID = a.ActivityID
+JOIN Participation p ON a.ActivityID = p.ActivityID
+GROUP BY t.TrainerID
+ORDER BY TotalEarnings DESC
+LIMIT 10;
