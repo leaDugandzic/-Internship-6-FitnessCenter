@@ -16,7 +16,7 @@ CREATE TABLE Trainer (
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
     DateOfBirth DATE NOT NULL,
-    Gender VARCHAR(10) CHECK (Gender IN ('MALE', 'FEMALE', 'UNKNOWN', 'OTHER')),
+    Gender VARCHAR(10) CHECK (Gender IN ('Male', 'Female', 'Unknown', 'Other')),
     CountryID INT NOT NULL REFERENCES Country(CountryID),
     FitnessCenterID INT NOT NULL REFERENCES FitnessCenter(FitnessCenterID)
 );
@@ -28,9 +28,9 @@ CREATE TABLE ActivityType (
 
 CREATE TABLE Activity (
     ActivityID SERIAL PRIMARY KEY,
-    ActivityCode VARCHAR(10) NOT NULL UNIQUE,
+    ActivityCode VARCHAR(10) NOT NULL,
     TypeID INT NOT NULL REFERENCES ActivityType(TypeID),
-    Schedule TIMESTAMP NOT NULL,
+    Schedule TEXT NOT NULL,
     Capacity INT NOT NULL,
     PricePerSession NUMERIC(10, 2) NOT NULL
 );
@@ -54,3 +54,19 @@ CREATE TABLE Participation (
     ActivityID INT NOT NULL REFERENCES Activity(ActivityID),
     RegistrationDate TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+CREATE OR REPLACE FUNCTION CheckHeadTrainerLimit()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (SELECT COUNT(*) FROM ActivityTrainer WHERE TrainerID = NEW.TrainerID AND TrainerRole = 'Head Trainer') >= 2 THEN
+        RAISE EXCEPTION 'A trainer cannot be the head trainer for more than 2 activities.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER TriggerHeadTrainerLimit
+BEFORE INSERT ON ActivityTrainer
+FOR EACH ROW
+WHEN (NEW.TrainerRole = 'Head Trainer')
+EXECUTE FUNCTION CheckHeadTrainerLimit();
