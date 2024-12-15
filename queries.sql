@@ -31,3 +31,21 @@ JOIN Activity a ON at.ActivityID = a.ActivityID
 GROUP BY fc.FitnessCenterID, fc.Name
 ORDER BY ActivityCount DESC
 LIMIT 3;
+
+SELECT 
+    t.FirstName, 
+    t.LastName,
+    CASE
+        WHEN COUNT(at.ActivityID) = 0 THEN 'AVAILABLE'
+        WHEN COUNT(at.ActivityID) BETWEEN 1 AND 3 THEN 'ACTIVE'
+        ELSE 'FULLY BOOKED'
+    END AS Status
+FROM Trainer t
+LEFT JOIN ActivityTrainer at ON t.TrainerID = at.TrainerID
+GROUP BY t.TrainerID;
+
+SELECT DISTINCT 
+    m.FirstName, 
+    m.LastName
+FROM Member m
+JOIN Participation p ON m.MemberID = p.MemberID;
