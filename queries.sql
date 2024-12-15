@@ -49,3 +49,11 @@ SELECT DISTINCT
     m.LastName
 FROM Member m
 JOIN Participation p ON m.MemberID = p.MemberID;
+
+SELECT DISTINCT 
+    t.FirstName, 
+    t.LastName
+FROM Trainer t
+JOIN ActivityTrainer at ON t.TrainerID = at.TrainerID
+JOIN Activity a ON at.ActivityID = a.ActivityID
+WHERE a.Schedule BETWEEN '08:00-09:00' AND '18:00-20:00';
