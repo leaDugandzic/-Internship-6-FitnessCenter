@@ -57,3 +57,15 @@ FROM Trainer t
 JOIN ActivityTrainer at ON t.TrainerID = at.TrainerID
 JOIN Activity a ON at.ActivityID = a.ActivityID
 WHERE a.Schedule BETWEEN '08:00-09:00' AND '18:00-20:00';
+
+SELECT 
+    at.Name AS ActivityType, 
+    c.Name AS CountryName, 
+    AVG(p.ParticipationID) AS AvgParticipation
+FROM Participation p
+JOIN Activity a ON p.ActivityID = a.ActivityID
+JOIN ActivityType at ON a.TypeID = at.TypeID
+JOIN Trainer t ON a.ActivityID = t.TrainerID
+JOIN Country c ON t.CountryID = c.CountryID
+GROUP BY at.Name, c.Name;
+
