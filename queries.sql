@@ -69,3 +69,15 @@ JOIN Trainer t ON a.ActivityID = t.TrainerID
 JOIN Country c ON t.CountryID = c.CountryID
 GROUP BY at.Name, c.Name;
 
+SELECT 
+    c.Name AS CountryName, 
+    COUNT(p.ParticipationID) AS ParticipationCount
+FROM Participation p
+JOIN Activity a ON p.ActivityID = a.ActivityID
+JOIN ActivityType at ON a.TypeID = at.TypeID
+JOIN Trainer t ON a.ActivityID = t.TrainerID
+JOIN Country c ON t.CountryID = c.CountryID
+WHERE at.Name = 'Injury Rehabilitation'
+GROUP BY c.Name
+ORDER BY ParticipationCount DESC
+LIMIT 10;
